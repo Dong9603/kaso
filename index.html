@@ -1201,7 +1201,7 @@
 
     const megaContent = {
       search: [
-        ["比價分類", ["一般商品", "日常採買", "3C 家電"]]
+        ["比價分類", ["一般商品", "附近推薦", "日常採買", "3C 家電"]]
       ],
       nearby: [
         ["不用多花錢", ["文化幣去處", "免費活動", "安心預算內店家"]],
@@ -1807,6 +1807,12 @@
 
     function showMega(key) {
       const menu = $("#megaMenu");
+      if (key === "search") {
+        menu.innerHTML = `<div class="shell search-mega-grid">${megaContent.search[0][1].map((label) => `<button type="button" data-mega-action="${escapeAttr(label)}">${label}</button>`).join("")}</div>`;
+        menu.hidden = false;
+        $$('[data-mega-action]', menu).forEach((btn) => btn.addEventListener("click", () => handleMegaAction(btn.dataset.megaAction)));
+        return;
+      }
       const columns = megaContent[key];
       const gridClass = columns.length === 1 && columns[0][1].length === 4 ? " four" : columns.length === 1 ? " single" : columns.length === 2 ? " two" : "";
       menu.innerHTML = `<div class="shell mega-grid${gridClass}">${columns.map((col, i) => `<div class="mega-col${i === 0 ? " primary" : ""}"><small>${col[0]}</small>${col[1].map((label) => `<button type="button" data-mega-action="${escapeAttr(label)}">${label}</button>`).join("")}${i === 2 ? `<p>功能保留完整，首頁只顯示最需要的入口。</p>` : ""}</div>`).join("")}</div>`;
@@ -1816,6 +1822,7 @@
 
     function handleMegaAction(label) {
       if (label === "一般商品") { state.searchCategory = "商品"; return renderView("search"); }
+      if (label === "附近推薦") return renderView("nearby");
       if (label === "日常採買") { state.searchCategory = "日常"; return renderView("search"); }
       if (label === "3C 家電") { state.searchCategory = "3C 家電"; return renderView("search"); }
       if (/機票|飯店|旅遊預算/.test(label)) return renderView("travel");
